@@ -37,7 +37,7 @@ jobs:
 
       - name: Add and sync Capacitor Android project
         run: |
-          npm install --no-save @capacitor/cli @capacitor/android
+          npm install --no-save --legacy-peer-deps @capacitor/cli @capacitor/android
           if [ ! -d "android" ]; then
             npx cap add android
           fi
