@@ -15,6 +15,7 @@ const DEFAULT_PROGRESS: LearningProgress = {
   sfxEnabled: true,
   speechRate: 0.9,
   testAdsEnabled: true,
+  adTestMode: false,
   savedDrawings: [],
 };
 
@@ -112,6 +113,10 @@ export function useLearningProgress() {
     setProgress((prev) => ({ ...prev, testAdsEnabled }));
   }, []);
 
+  const setAdTestMode = useCallback((adTestMode: boolean) => {
+    setProgress((prev) => ({ ...prev, adTestMode }));
+  }, []);
+
   const saveDrawing = useCallback((drawing: SavedDrawing) => {
     setProgress((prev) => ({
       ...prev,
@@ -149,6 +154,7 @@ export function useLearningProgress() {
     setSfxEnabled,
     setSpeechRate,
     setTestAdsEnabled,
+    setAdTestMode,
     saveDrawing,
     deleteDrawing,
     resetProgress,

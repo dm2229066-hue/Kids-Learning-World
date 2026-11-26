@@ -36,5 +36,6 @@ export interface LearningProgress {
   sfxEnabled: boolean;
   speechRate: number;
   testAdsEnabled: boolean;
+  adTestMode: boolean;
   savedDrawings: SavedDrawing[];
 }

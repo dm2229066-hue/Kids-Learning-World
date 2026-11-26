@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import {
   ArrowLeft,
   CheckCircle2,
+  FileText,
   ShieldCheck,
   Smartphone,
   Trash2,
   Volume2,
   VolumeX,
+  X,
 } from 'lucide-react';
 import { AgeGroup, Language, LearningProgress } from '../../types/learning';
 import { playPop, speakText } from '../../utils/audio';
@@ -20,6 +22,7 @@ interface ParentSettingsViewProps {
   onSetSfxEnabled: (enabled: boolean) => void;
   onSetSpeechRate: (rate: number) => void;
   onSetTestAdsEnabled: (enabled: boolean) => void;
+  onSetAdTestMode: (testMode: boolean) => void;
   onPreviewInterstitial: () => void;
   onResetProgress: () => void;
   onBack: () => void;
@@ -33,11 +36,13 @@ export const ParentSettingsView: React.FC<ParentSettingsViewProps> = ({
   onSetSfxEnabled,
   onSetSpeechRate,
   onSetTestAdsEnabled,
+  onSetAdTestMode,
   onPreviewInterstitial,
   onResetProgress,
   onBack,
 }) => {
   const [confirmReset, setConfirmReset] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const lang = progress.language;
 
   return (
@@ -206,7 +211,7 @@ export const ParentSettingsView: React.FC<ParentSettingsViewProps> = ({
 
             <div className="border-t border-slate-200 pt-4">
               <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                Test Ad Mode (AdMob Android Test Units)
+                AdMob Banner Settings (Child-Directed Mode)
               </label>
               <div className="mt-2 flex flex-wrap gap-2.5">
                 <button
@@ -217,11 +222,25 @@ export const ParentSettingsView: React.FC<ParentSettingsViewProps> = ({
                   }}
                   className={`flex min-h-[46px] flex-1 items-center justify-center rounded-2xl border-2 px-4 py-2 text-sm font-extrabold ${
                     progress.testAdsEnabled
-                      ? 'border-amber-500 bg-amber-50 text-amber-900'
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-900'
                       : 'border-slate-200 bg-slate-100 text-slate-600'
                   }`}
                 >
-                  Test Banner Ad: {progress.testAdsEnabled ? 'ON' : 'OFF'}
+                  Banner Ads: {progress.testAdsEnabled ? 'ON' : 'OFF'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    playPop(progress.sfxEnabled);
+                    onSetAdTestMode(!progress.adTestMode);
+                  }}
+                  className={`flex min-h-[46px] flex-1 items-center justify-center rounded-2xl border-2 px-4 py-2 text-sm font-extrabold ${
+                    progress.adTestMode
+                      ? 'border-amber-500 bg-amber-50 text-amber-900'
+                      : 'border-sky-600 bg-sky-50 text-sky-900'
+                  }`}
+                >
+                  {progress.adTestMode ? 'Mode: Test Ad Unit' : 'Mode: Real Ad Unit'}
                 </button>
                 <button
                   type="button"
@@ -231,7 +250,7 @@ export const ParentSettingsView: React.FC<ParentSettingsViewProps> = ({
                   }}
                   className="toy-btn-3d flex min-h-[46px] flex-1 items-center justify-center rounded-2xl border-2 border-sky-600 border-b-4 bg-sky-500 px-4 py-2 text-sm font-extrabold text-white"
                 >
-                  Preview Interstitial Ad
+                  Preview Interstitial
                 </button>
               </div>
             </div>
@@ -261,7 +280,19 @@ export const ParentSettingsView: React.FC<ParentSettingsViewProps> = ({
             </li>
           </ul>
 
-          <div className="mt-6 border-t border-slate-200 pt-5">
+          <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-slate-200 pt-5">
+            <button
+              type="button"
+              onClick={() => {
+                playPop(progress.sfxEnabled);
+                setShowPrivacy(true);
+              }}
+              className="flex min-h-[46px] items-center gap-2 rounded-2xl border-2 border-sky-200 bg-sky-50 px-4 py-2 text-sm font-extrabold text-sky-800 hover:bg-sky-100"
+            >
+              <FileText className="h-4 w-4" />
+              <span>{lang === 'hi' ? 'गोपनीयता नीति पढ़ें' : 'Read Privacy Policy'}</span>
+            </button>
+
             {!confirmReset ? (
               <button
                 type="button"
@@ -272,7 +303,7 @@ export const ParentSettingsView: React.FC<ParentSettingsViewProps> = ({
                 <span>Reset Local Learning Progress</span>
               </button>
             ) : (
-              <div className="rounded-2xl border-2 border-rose-300 bg-rose-50 p-4">
+              <div className="w-full rounded-2xl border-2 border-rose-300 bg-rose-50 p-4">
                 <p className="text-xs font-bold text-rose-900">
                   Are you sure? This clears all earned stars, learned badges, and saved drawings on this device.
                 </p>
@@ -360,18 +391,70 @@ cd android && ./gradlew assembleDebug`}
 
         <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
           <h3 className="font-display text-sm font-extrabold text-amber-950">
-            4. Android AdMob Test Ad Configuration (Optional)
+            4. Android AdMob Configuration
           </h3>
           <p className="mt-1 text-xs font-medium text-amber-900">
-            For native Android builds with <code className="font-mono">@capacitor-community/admob</code>, use Google&apos;s official family-safe Test IDs before publishing:
+            Your real AdMob App ID and Banner Ad Unit ID are configured with COPPA child-directed targeting (<code className="font-mono">npa: true</code>) and automatically injected into <code className="font-mono">AndroidManifest.xml</code> during APK builds.
           </p>
           <pre className="mt-2 overflow-x-auto rounded-xl bg-slate-900 p-3 text-xs text-amber-100">
-{`AdMob App ID:          ${ANDROID_TEST_AD_IDS.appId}
-Banner Test ID:        ${ANDROID_TEST_AD_IDS.bannerId}
-Interstitial Test ID:  ${ANDROID_TEST_AD_IDS.interstitialId}`}
+{`Active Real App ID:    ${ANDROID_TEST_AD_IDS.appId}
+Active Real Banner ID: ${ANDROID_TEST_AD_IDS.bannerId}
+Test Banner ID:        ${ANDROID_TEST_AD_IDS.testBannerId}
+Play Store Policy URL: /privacy-policy.html`}
           </pre>
         </div>
       </div>
+
+      {showPrivacy && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-xs">
+          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl border-2 border-slate-200 bg-white p-6 shadow-2xl">
+            <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-4">
+              <div>
+                <h3 className="font-display text-xl font-extrabold text-slate-900">
+                  Privacy Policy — Kids Learning World
+                </h3>
+                <p className="text-xs font-medium text-slate-500">
+                  Effective Date: November 26, 2026 · COPPA &amp; Google Play Families Compliant
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPrivacy(false)}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200"
+                aria-label="Close Privacy Policy"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="mt-4 space-y-4 text-sm leading-relaxed text-slate-700">
+              <p>
+                <strong>1. Zero Personal Data Collection:</strong> Kids Learning World does not require login or accounts and does not collect names, emails, phone numbers, GPS location, camera photos, or microphone recordings.
+              </p>
+              <p>
+                <strong>2. Local Device Storage &amp; Offline Mode:</strong> Reward stars, animal badges, language preferences, and Coloring Studio artwork are saved strictly on your device using local storage.
+              </p>
+              <p>
+                <strong>3. Child-Directed Advertising (Google AdMob):</strong> Banner ads are configured with COPPA child-directed flags (<code className="font-mono">tagForChildDirectedTreatment: true</code>, <code className="font-mono">tagForUnderAgeOfConsent: true</code>, <code className="font-mono">MaxAdContentRating: General</code>, and non-personalized ads <code className="font-mono">npa: true</code>).
+              </p>
+              <p>
+                <strong>4. No Chat, Social, or Child External Links:</strong> There are no chat rooms, social features, or outbound links accessible to children. Parents can reset all local data anytime in Parent Settings.
+              </p>
+              <p>
+                <strong>5. Contact &amp; Hosted Policy Page:</strong> Contact: <strong>creativedeepakarts@gmail.com</strong>. For Google Play Console submission, this policy is also bundled at <code className="font-mono">/privacy-policy.html</code>.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowPrivacy(false)}
+              className="toy-btn-3d mt-6 min-h-[48px] w-full rounded-2xl border-2 border-sky-700 border-b-4 bg-sky-500 py-2.5 text-sm font-extrabold text-white"
+            >
+              {lang === 'hi' ? 'बंद करें' : 'Close Privacy Policy'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

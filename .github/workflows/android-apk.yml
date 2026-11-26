@@ -37,11 +37,21 @@ jobs:
 
       - name: Add and sync Capacitor Android project
         run: |
-          npm install --no-save @capacitor/core @capacitor/cli @capacitor/android
+          npm install --no-save @capacitor/cli @capacitor/android
           if [ ! -d "android" ]; then
             npx cap add android
           fi
           npx cap sync android
+
+      - name: Configure AdMob App ID in AndroidManifest.xml
+        env:
+          ADMOB_APP_ID: ${{ secrets.ADMOB_APP_ID }}
+        run: |
+          APP_ID="${ADMOB_APP_ID:-ca-app-pub-7496793317592044~6777057990}"
+          MANIFEST="android/app/src/main/AndroidManifest.xml"
+          if ! grep -q "com.google.android.gms.ads.APPLICATION_ID" "$MANIFEST"; then
+            sed -i "s|</application>|    <meta-data android:name=\"com.google.android.gms.ads.APPLICATION_ID\" android:value=\"${APP_ID}\" />\n    </application>|" "$MANIFEST"
+          fi
 
       - name: Build Debug APK with Gradle
         working-directory: android

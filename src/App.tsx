@@ -35,6 +35,7 @@ export default function App() {
     setSfxEnabled,
     setSpeechRate,
     setTestAdsEnabled,
+    setAdTestMode,
     saveDrawing,
     deleteDrawing,
     resetProgress,
@@ -147,6 +148,7 @@ export default function App() {
             onSetSfxEnabled={setSfxEnabled}
             onSetSpeechRate={setSpeechRate}
             onSetTestAdsEnabled={setTestAdsEnabled}
+            onSetAdTestMode={setAdTestMode}
             onPreviewInterstitial={() => setInterstitialOpen(true)}
             onResetProgress={resetProgress}
             onBack={() => setParentMode(false)}
@@ -293,6 +295,7 @@ export default function App() {
 
         <TestAdBanner
           enabled={progress.testAdsEnabled && !parentMode}
+          useTestMode={progress.adTestMode}
           language={lang}
           sfxEnabled={progress.sfxEnabled}
         />

@@ -1,48 +1,73 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Info, X } from 'lucide-react';
 import { Language } from '../../types/learning';
+import { ADMOB_IDS, isNativeAndroidOrIOS, syncNativeBannerAd } from '../../utils/admob';
 import { playPop } from '../../utils/audio';
 
 export const ANDROID_TEST_AD_IDS = {
-  appId: 'ca-app-pub-3940256099942544~3347511713',
-  bannerId: 'ca-app-pub-3940256099942544/6300978111',
-  interstitialId: 'ca-app-pub-3940256099942544/1033173712',
+  appId: ADMOB_IDS.realAppId,
+  bannerId: ADMOB_IDS.realBannerId,
+  testAppId: ADMOB_IDS.testAppId,
+  testBannerId: ADMOB_IDS.testBannerId,
+  interstitialId: ADMOB_IDS.testInterstitialId,
 };
 
 interface TestAdBannerProps {
   enabled: boolean;
+  useTestMode: boolean;
   language: Language;
   sfxEnabled: boolean;
 }
 
 export const TestAdBanner: React.FC<TestAdBannerProps> = ({
   enabled,
+  useTestMode,
   language,
   sfxEnabled,
 }) => {
   const [clicked, setClicked] = useState(false);
+  const isNative = isNativeAndroidOrIOS();
+
+  useEffect(() => {
+    syncNativeBannerAd(enabled, useTestMode);
+  }, [enabled, useTestMode]);
 
   if (!enabled) return null;
+
+  // On native Android/iOS APK, AdMob renders the real native banner overlay directly
+  if (isNative) {
+    return <div className="h-[68px]" aria-hidden="true" />;
+  }
+
+  const activeBannerId = useTestMode ? ADMOB_IDS.testBannerId : ADMOB_IDS.realBannerId;
 
   return (
     <div className="mx-auto mt-6 max-w-4xl">
       <div
         role="region"
-        aria-label="Test Advertisement"
+        aria-label="AdMob Banner Slot"
         className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-dashed border-sky-300 bg-white px-4 py-2.5 shadow-xs"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <span className="shrink-0 rounded-md bg-amber-400 px-2 py-0.5 text-[11px] font-extrabold tracking-wide text-slate-900">
-            TEST AD
+          <span
+            className={`shrink-0 rounded-md px-2 py-0.5 text-[11px] font-extrabold tracking-wide ${
+              useTestMode ? 'bg-amber-400 text-slate-900' : 'bg-emerald-500 text-white'
+            }`}
+          >
+            {useTestMode ? 'TEST AD' : 'ADMOB BANNER'}
           </span>
           <div className="min-w-0">
             <p className="truncate text-xs font-extrabold text-slate-800 sm:text-sm">
-              {language === 'hi'
-                ? 'टेस्ट विज्ञापन बैनर · परिवार-सुरक्षित मोड (320×50)'
-                : 'Test Banner Ad · Child-Safe AdMob Demo (320×50)'}
+              {useTestMode
+                ? language === 'hi'
+                  ? 'टेस्ट विज्ञापन बैनर · परिवार-सुरक्षित मोड (320×50)'
+                  : 'Test Banner Ad · Child-Safe AdMob Demo (320×50)'
+                : language === 'hi'
+                  ? 'लाइव Android AdMob बैनर यूनिट सक्रिय (बच्चों के लिए सुरक्षित)'
+                  : 'Android AdMob Banner Unit Active (Child-Directed Mode)'}
             </p>
             <p className="truncate font-mono text-[11px] text-slate-500">
-              {ANDROID_TEST_AD_IDS.bannerId}
+              {activeBannerId}
             </p>
           </div>
         </div>
@@ -58,12 +83,12 @@ export const TestAdBanner: React.FC<TestAdBannerProps> = ({
           {clicked ? (
             <>
               <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              <span>{language === 'hi' ? 'टेस्ट सफल' : 'Test Verified'}</span>
+              <span>{language === 'hi' ? 'यूनिट सक्रिय' : 'Unit Verified'}</span>
             </>
           ) : (
             <>
               <Info className="h-4 w-4" />
-              <span>{language === 'hi' ? 'टेस्ट देखें' : 'Test Tap'}</span>
+              <span>{language === 'hi' ? 'ID देखें' : 'Verify Unit'}</span>
             </>
           )}
         </button>
