@@ -1,0 +1,6 @@
+{
+  "name": "Kids Learning World",
+  "description": "Colorful 3D cartoon bilingual (English & Hindi) offline-ready educational app for children aged 2 to 10.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
