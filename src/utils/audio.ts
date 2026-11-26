@@ -1,6 +1,25 @@
+import { Capacitor } from '@capacitor/core';
+import { QueueStrategy, TextToSpeech } from '@capacitor-community/text-to-speech';
 import { Language } from '../types/learning';
 
 let audioCtx: AudioContext | null = null;
+let cachedVoices: SpeechSynthesisVoice[] = [];
+
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  const refreshVoices = () => {
+    try {
+      cachedVoices = window.speechSynthesis.getVoices();
+    } catch {
+      cachedVoices = [];
+    }
+  };
+  refreshVoices();
+  if (typeof window.speechSynthesis.addEventListener === 'function') {
+    window.speechSynthesis.addEventListener('voiceschanged', refreshVoices);
+  } else {
+    window.speechSynthesis.onvoiceschanged = refreshVoices;
+  }
+}
 
 function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -162,24 +181,39 @@ export function playAnimalTone(pitch: 'low' | 'mid' | 'chirp', enabled = true) {
   }
 }
 
-export function speakText(
-  text: string,
-  lang: Language = 'en',
-  enabled = true,
-  rate = 0.9
-) {
-  if (!enabled || typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    return;
+export function stopSpeaking() {
+  try {
+    if (Capacitor.isNativePlatform()) {
+      TextToSpeech.stop().catch(() => {});
+    }
+  } catch {
+    // Ignore
   }
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try {
+      window.speechSynthesis.cancel();
+    } catch {
+      // Ignore
+    }
+  }
+}
+
+function speakWithWebSpeech(text: string, lang: Language, rate: number) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
   try {
     window.speechSynthesis.cancel();
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
     const utterance = new SpeechSynthesisUtterance(text);
     const targetLang = lang === 'hi' ? 'hi-IN' : 'en-US';
     utterance.lang = targetLang;
     utterance.rate = rate;
-    utterance.pitch = 1.1;
+    utterance.pitch = 1.08;
+    utterance.volume = 1.0;
 
-    const voices = window.speechSynthesis.getVoices();
+    const voices =
+      cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
     if (voices.length > 0) {
       const exactMatch = voices.find((v) => v.lang.toLowerCase() === targetLang.toLowerCase());
       const prefixMatch = voices.find((v) =>
@@ -195,4 +229,37 @@ export function speakText(
   } catch {
     // Ignore speech synthesis errors
   }
+}
+
+export function speakText(
+  text: string,
+  lang: Language = 'en',
+  enabled = true,
+  rate = 0.9
+) {
+  if (!enabled || !text.trim()) {
+    return;
+  }
+
+  const targetLang = lang === 'hi' ? 'hi-IN' : 'en-US';
+
+  try {
+    if (Capacitor.isNativePlatform()) {
+      TextToSpeech.speak({
+        text,
+        lang: targetLang,
+        rate,
+        pitch: 1.08,
+        volume: 1.0,
+        queueStrategy: QueueStrategy.Flush,
+      }).catch(() => {
+        speakWithWebSpeech(text, lang, rate);
+      });
+      return;
+    }
+  } catch {
+    // Fallback to browser Web Speech API
+  }
+
+  speakWithWebSpeech(text, lang, rate);
 }

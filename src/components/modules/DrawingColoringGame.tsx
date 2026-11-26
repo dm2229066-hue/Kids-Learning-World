@@ -16,19 +16,19 @@ interface DrawingColoringGameProps {
   onBack: () => void;
 }
 
-const PALETTE = [
-  '#EF4444', // Red
-  '#F97316', // Orange
-  '#FACC15', // Yellow
-  '#22C55E', // Green
-  '#0EA5E9', // Sky Blue
-  '#2563EB', // Royal Blue
-  '#6366F1', // Indigo
-  '#EC4899', // Pink
-  '#92400E', // Brown
-  '#1E293B', // Charcoal
-  '#94A3B8', // Grey
-  '#FFFFFF', // White
+const PALETTE: { hex: string; en: string; hi: string }[] = [
+  { hex: '#EF4444', en: 'Red', hi: 'लाल' },
+  { hex: '#F97316', en: 'Orange', hi: 'नारंगी' },
+  { hex: '#FACC15', en: 'Yellow', hi: 'पीला' },
+  { hex: '#22C55E', en: 'Green', hi: 'हरा' },
+  { hex: '#0EA5E9', en: 'Sky Blue', hi: 'आसमानी' },
+  { hex: '#2563EB', en: 'Blue', hi: 'नीला' },
+  { hex: '#6366F1', en: 'Indigo', hi: 'जामुनी' },
+  { hex: '#EC4899', en: 'Pink', hi: 'गुलाबी' },
+  { hex: '#92400E', en: 'Brown', hi: 'भूरा' },
+  { hex: '#1E293B', en: 'Black', hi: 'काला' },
+  { hex: '#94A3B8', en: 'Grey', hi: 'सलेटी' },
+  { hex: '#FFFFFF', en: 'White', hi: 'सफ़ेद' },
 ];
 
 type TemplateId = 'free' | 'lion' | 'rocket' | 'apple' | 'butterfly';
@@ -282,6 +282,16 @@ export const DrawingColoringGame: React.FC<DrawingColoringGameProps> = ({
         stars={stars}
         accentBg="bg-pink-500"
         onBack={onBack}
+        onSpeakPrompt={() =>
+          speakText(
+            language === 'hi'
+              ? 'अपना पसंदीदा रंग चुनें और सुंदर चित्र बनाएँ'
+              : 'Pick a bright crayon color and draw a lovely picture!',
+            language,
+            voiceEnabled,
+            speechRate
+          )
+        }
       />
 
       {/* Template Selector */}
@@ -329,22 +339,28 @@ export const DrawingColoringGame: React.FC<DrawingColoringGameProps> = ({
               {language === 'hi' ? 'रंग चुनें' : 'Crayon Colors'}
             </h3>
             <div className="mt-3 grid grid-cols-6 gap-2">
-              {PALETTE.map((hex) => {
-                const active = !isEraser && color === hex;
+              {PALETTE.map((swatch) => {
+                const active = !isEraser && color === swatch.hex;
                 return (
                   <button
-                    key={hex}
+                    key={swatch.hex}
                     type="button"
                     onClick={() => {
                       playPop(sfxEnabled);
-                      setColor(hex);
+                      setColor(swatch.hex);
                       setIsEraser(false);
+                      speakText(
+                        language === 'hi' ? swatch.hi : swatch.en,
+                        language,
+                        voiceEnabled,
+                        speechRate
+                      );
                     }}
-                    style={{ backgroundColor: hex }}
+                    style={{ backgroundColor: swatch.hex }}
                     className={`h-11 w-full rounded-xl border-2 transition-transform ${
                       active ? 'scale-110 border-slate-900 ring-2 ring-sky-400' : 'border-slate-300'
                     }`}
-                    aria-label={`Color ${hex}`}
+                    aria-label={swatch.en}
                   />
                 );
               })}

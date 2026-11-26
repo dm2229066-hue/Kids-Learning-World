@@ -145,6 +145,16 @@ export const MemoryGame: React.FC<MemoryGameProps> = ({
         stars={stars}
         accentBg="bg-teal-500"
         onBack={onBack}
+        onSpeakPrompt={() =>
+          speakText(
+            language === 'hi'
+              ? 'कार्ड पलटें और एक जैसे चित्रों की जोड़ी बनाएँ'
+              : 'Flip two cards to find matching pairs!',
+            language,
+            voiceEnabled,
+            speechRate
+          )
+        }
       />
 
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">

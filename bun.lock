@@ -6,6 +6,7 @@
       "name": "react-example",
       "dependencies": {
         "@capacitor-community/admob": "^8.4.2",
+        "@capacitor-community/text-to-speech": "^8.0.2",
         "@capacitor/core": "^8.6.3",
         "@google/genai": "^2.4.0",
         "@tailwindcss/vite": "^4.3.3",
@@ -218,6 +219,8 @@
     "@babel/types": ["@babel/types@7.29.15", "", { "dependencies": { "@babel/helper-string-parser": "^7.29.15", "@babel/helper-validator-identifier": "^7.29.7" } }, "sha512-/XKpKDakL//LZ66bq1XsZOswuqeI5MZqPLDu18o3XdkU1fNJ7bdPtzgnc4ZNS+bBGHV0FJG8jjb8SwcC3nNVQQ=="],
 
     "@capacitor-community/admob": ["@capacitor-community/admob@8.4.2", "", { "dependencies": { "@capacitor/core": "^8.0.0", "@rdlabo/capacitor-docgen": "^0.4.1", "@webview-native-ui/engine": "^1.0.10" } }, "sha512-YDCGVyWyiD6iu44uigv6fgngTGLNeguRqJlkxws7pfNzsbnRooDrS60I1IOlmBZQQDpvx/5w49D6+RWWxfPl5Q=="],
+
+    "@capacitor-community/text-to-speech": ["@capacitor-community/text-to-speech@8.0.2", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-SbpBMzcmzdTiN8jQDme/yUYHEJISZA+IiaRn5zT14k3UKpjaA7eYBnSm9h76rJHRV/y6DVZVhT1J0SaK5JTKtA=="],
 
     "@capacitor/core": ["@capacitor/core@8.6.3", "", { "dependencies": { "tslib": "^2.1.0" } }, "sha512-WJ/DM2OTriEED5sI4jUyJU0NL3QJ/YenS2+SepW/nghMA5ixFJhm8NqGWdqDYYg+eRtJkjD8PcXtIxy4zTP0PA=="],
 

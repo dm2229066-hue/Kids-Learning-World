@@ -127,6 +127,16 @@ export const ColorsShapesModule: React.FC<ColorsShapesModuleProps> = ({
         stars={stars}
         accentBg="bg-pink-500"
         onBack={onBack}
+        onSpeakPrompt={() =>
+          speakText(
+            language === 'hi'
+              ? 'सीखने के लिए किसी भी रंग या आकार को दबाएँ'
+              : 'Tap any color or shape to hear its name',
+            language,
+            voiceEnabled,
+            speechRate
+          )
+        }
       />
 
       <div className="mb-6 flex items-center gap-2 rounded-2xl border-2 border-slate-200 bg-white p-1.5 shadow-xs sm:inline-flex">

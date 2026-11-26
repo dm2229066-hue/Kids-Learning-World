@@ -123,6 +123,16 @@ export const PicturePuzzleGame: React.FC<PicturePuzzleGameProps> = ({
         stars={stars}
         accentBg="bg-amber-500"
         onBack={onBack}
+        onSpeakPrompt={() =>
+          speakText(
+            language === 'hi'
+              ? 'चित्र पूरा करने के लिए दो टुकड़ों को दबाकर जगह बदलें'
+              : 'Tap two puzzle pieces to swap them and solve the picture!',
+            language,
+            voiceEnabled,
+            speechRate
+          )
+        }
       />
 
       {/* Puzzle & Difficulty Controls */}

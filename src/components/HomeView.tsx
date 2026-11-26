@@ -1,8 +1,8 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Star, Volume2 } from 'lucide-react';
+import { Star, Volume2, VolumeX } from 'lucide-react';
 import { AgeGroup, Language, LearningProgress, ModuleId } from '../types/learning';
-import { playPop, speakText } from '../utils/audio';
+import { playPop, speakText, stopSpeaking } from '../utils/audio';
 import { PWAInstallButton } from './common/ToyUI';
 
 interface HomeViewProps {
@@ -10,6 +10,7 @@ interface HomeViewProps {
   onSelectModule: (id: ModuleId) => void;
   onSetLanguage: (lang: Language) => void;
   onSetAgeGroup: (age: AgeGroup) => void;
+  onToggleVoice: (enabled: boolean) => void;
 }
 
 interface WorldTile {
@@ -167,6 +168,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   onSelectModule,
   onSetLanguage,
   onSetAgeGroup,
+  onToggleVoice,
 }) => {
   const lang = progress.language;
 
@@ -293,7 +295,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                       ? 'किड्स लर्निंग वर्ल्ड में आपका स्वागत है! शुरू करने के लिए कोई भी कार्ड दबाएँ।'
                       : 'Welcome to Kids Learning World! Tap any colorful card to start learning.',
                     lang,
-                    progress.voiceEnabled,
+                    true,
                     progress.speechRate
                   )
                 }
@@ -301,6 +303,41 @@ export const HomeView: React.FC<HomeViewProps> = ({
               >
                 <Volume2 className="h-4 w-4" />
                 <span>{lang === 'hi' ? 'लियो से सुनें' : 'Hear Leo'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !progress.voiceEnabled;
+                  playPop(progress.sfxEnabled);
+                  onToggleVoice(next);
+                  if (next) {
+                    speakText(
+                      lang === 'hi' ? 'आवाज़ चालू है' : 'Voice is on!',
+                      lang,
+                      true,
+                      progress.speechRate
+                    );
+                  } else {
+                    stopSpeaking();
+                  }
+                }}
+                className={`toy-btn-3d flex min-h-[44px] items-center gap-1.5 rounded-2xl border-2 border-b-4 px-3.5 py-2 text-xs font-extrabold whitespace-nowrap ${
+                  progress.voiceEnabled
+                    ? 'border-sky-600 bg-sky-500 text-white'
+                    : 'border-slate-300 bg-slate-100 text-slate-600'
+                }`}
+              >
+                {progress.voiceEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                <span>
+                  {progress.voiceEnabled
+                    ? lang === 'hi'
+                      ? 'आवाज़: चालू'
+                      : 'Voice: ON'
+                    : lang === 'hi'
+                      ? 'आवाज़: बंद'
+                      : 'Voice: OFF'}
+                </span>
               </button>
 
               <PWAInstallButton language={lang} />

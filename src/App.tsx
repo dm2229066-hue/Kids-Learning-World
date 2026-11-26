@@ -159,6 +159,7 @@ export default function App() {
             onSelectModule={navigateTo}
             onSetLanguage={setLanguage}
             onSetAgeGroup={setAgeGroup}
+            onToggleVoice={setVoiceEnabled}
           />
         ) : activeModule === 'abc' ? (
           <AlphabetModule
