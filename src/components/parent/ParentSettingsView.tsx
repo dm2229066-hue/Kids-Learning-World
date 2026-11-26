@@ -339,18 +339,21 @@ npm run build`}
 
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <h3 className="font-display text-sm font-extrabold text-slate-900">
-              3. Build Native Android APK / Play Store AAB
+              3. Build Android APK (GitHub Actions or Local)
             </h3>
             <pre className="mt-2 overflow-x-auto rounded-xl bg-slate-900 p-3 text-xs text-emerald-100">
-{`npm run build
+{`# Automated on GitHub:
+# Push to main -> Actions -> Build Android APK
+# Download artifact: Kids-Learning-World-APK
+
+# Or build locally:
+npm run build
 npm install @capacitor/core @capacitor/cli @capacitor/android
-npx cap init "Kids Learning World" com.kidslearning.world --web-dir=dist
-npx cap add android
-npx cap sync android
-npx cap open android`}
+npx cap add android && npx cap sync android
+cd android && ./gradlew assembleDebug`}
             </pre>
             <p className="mt-2 text-xs text-slate-600">
-              In Android Studio, choose <strong>Build → Build Bundle(s) / APK(s)</strong> to generate a signed APK or Play Store AAB.
+              GitHub Actions (<code className="font-mono">.github/workflows/android-apk.yml</code>) automatically compiles <code className="font-mono">Kids-Learning-World-debug.apk</code> on every push to <code className="font-mono">main</code>.
             </p>
           </div>
         </div>

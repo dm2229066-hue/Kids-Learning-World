@@ -1,0 +1,11 @@
+{
+  "appId": "com.kidslearning.world",
+  "appName": "Kids Learning World",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}
